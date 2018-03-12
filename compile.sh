@@ -1,5 +1,5 @@
 # Update HADOOP CLASSPATH variable
-#export HADOOP_CLASSPATH=$(hadoop classpath)
+export HADOOP_CLASSPATH=$(hadoop classpath)
 #echo $HADOOP_CLASSPATH
 
 # Now compile and create a jar
