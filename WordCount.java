@@ -11,7 +11,35 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import org.apache.hadoop.mapred.InputSplit;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.JobContext;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapred.LineRecordReader;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
+
 public class WordCount {
+
+	/*
+	public static class TextInputFormat extends FileInputFormat<LongWritable, Text> {
+		@Override
+		public RecordReader<LongWritable, Text> createRecordReader(InputSplit split, TaskAttemptContext context) {
+			String delimiter = "\n\n\n\n\n";
+			byte[] recordDelimiterBytes = null;
+			if (null != delimiter) {
+				recordDelimiterBytes = delimiter.getBytes();
+			}
+			return new LineRecordReader(recordDelimiterBytes);
+		}
+
+		@Override
+		protected boolean isSplitable(JobContext context, Path file) {
+			CompressionCodec codec = new CompressionCodecFactory(context.getConfiguration()).getCodec(file);
+			return codec == null;
+		}
+	}
+	*/
 
 	public static class TokenizerMapper extends Mapper<Object, Text, Text, LongWritable> {
 
@@ -19,7 +47,7 @@ public class WordCount {
 	    private Text word = new Text();
 
 	    public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-		    String[] totalPost = value.toString().split("\n\n\n\n\n");
+		    String[] totalPost = value.toString().split("\n\n");
 			String link = "";
 
 			out:
@@ -31,6 +59,8 @@ public class WordCount {
 						link = eachUser;
 						continue out;
 					}
+
+					// date
 					if (eachUser.matches(("[a-zA-Z]{3} [a-zA-Z]{3} \\d{1,2} \\d{2}:\\d{2}:\\d{2} 201\\d UTC"))) {
 						continue;
 					}
@@ -62,6 +92,7 @@ public class WordCount {
 
 	public static void main(String[] args) throws Exception {
     	Configuration conf = new Configuration();
+		conf.set("textinputformat.record.delimiter", "\n\n\n\n\n");
     	Job job = Job.getInstance(conf, "word count");
     	job.setJarByClass(WordCount.class);
     	job.setMapperClass(TokenizerMapper.class);

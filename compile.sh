@@ -6,8 +6,21 @@ export HADOOP_CLASSPATH=$(hadoop classpath)
 javac -classpath $HADOOP_CLASSPATH WordCount.java
 jar cf wc.jar WordCount*.class
 
-# Delete output directory
-hdfs dfs -rm -r /user/tchou006/wordcount/output
+inputDir=/user/tchou006/wordcount/input
+remoteDir=/user/tchou006/wordcount/output
+
+if [ $# == 0 ]; then
+	# Delete output directory
+	hdfs dfs -rm -r $remoteDir
+elif [ $# == 1 ]; then
+	remoteDir=$1
+elif [ $# == 2 ]; then
+	inputDir=$1
+	remoteDir=$2
+else
+	echo "As 0 input"
+	hdfs dfs -rm -r $remoteDir
+fi
 
 # run WordCount
-hadoop jar wc.jar WordCount /user/tchou006/wordcount/input /user/tchou006/wordcount/output
+hadoop jar wc.jar WordCount $inputDir $remoteDir
