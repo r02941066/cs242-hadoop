@@ -55,14 +55,7 @@ public class WordCount {
 					continue;
 				}
 
-				if (eachUser.equals("\n")) {
-					continue;
-				}
-
-				// replace \n
-				String single = eachUser.replaceAll("\n", "");
-
-				context.write(word, new Text(single));
+				context.write(word, new Text(eachUser + " "));
 			}
 		}
 	}
@@ -72,9 +65,10 @@ public class WordCount {
 		private String str;
 
   	 	public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+			str = "";
 
 			for (Text val : values) {
-				str += val;
+				str += val.toString() + " ";
 			}
 		    context.write(key, new Text(str));
 	    }
@@ -134,14 +128,14 @@ public class WordCount {
 	public static void main(String[] args) throws Exception {
     	Configuration conf = new Configuration();
 		conf.set("textinputformat.record.delimiter", "\n\n\n\n\n");
-		conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", "\n");
+		//conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", "\n");
     	Job job = Job.getInstance(conf, "word count");
     	job.setJarByClass(WordCount.class);
     	job.setMapperClass(TokenizerMapper.class);
     	job.setCombinerClass(IntSumReducer.class);
     	job.setReducerClass(IntSumReducer.class);
     	job.setOutputKeyClass(Text.class);
-    	//job.setOutputValueClass(LongWritable.class);
+    	job.setOutputValueClass(Text.class);
     	FileInputFormat.addInputPath(job, new Path(args[0]));
     	FileOutputFormat.setOutputPath(job, new Path(args[1]));
     	System.exit(job.waitForCompletion(true) ? 0 : 1);
