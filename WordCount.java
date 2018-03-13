@@ -50,7 +50,7 @@ public class WordCount {
 			String[] line = value.toString().split("\n");
 
 			for (String eachUser : line) {
-				if (eachUser.matches("https://www.reddit.com/r/.*/comments/[a-zA-z0-9]{6}/.*/")) {
+				if (eachUser.matches("https://www.reddit.com/.*/comments/[a-zA-z0-9]{6}/.*/")) {
 					word.set(eachUser);
 					continue;
 				}
@@ -89,7 +89,7 @@ public class WordCount {
 				String[] line = comments.split("\n");
 
 				for (String eachUser : line) {
-					if (eachUser.matches("https://www.reddit.com/r/.*/comments/[a-zA-z0-9]{6}/.*/")) {
+					if (eachUser.matches("https://www.reddit.com/.*/comments/[a-zA-z0-9]{6}/.*/")) {
 						link = eachUser;
 						continue out;
 					}
